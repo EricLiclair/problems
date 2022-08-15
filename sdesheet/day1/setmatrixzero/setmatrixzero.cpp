@@ -11,44 +11,53 @@ typedef vector<vector<int>> vvi;
 class Solution
 {
 
-    void makeZero(vvi &matrix)
+    void mz(int i, int j, vvi &matrix)
     {
-        vi row_zero(matrix.size());
-        vi col_zero(matrix[0].size());
-
-        for (int i = 0; i < matrix.size(); i++)
+        // make zeroes over row
+        for (int dj = 0; dj < matrix[0].size(); dj++)
         {
-            for (int j = 0; j < matrix[0].size(); j++)
+            if (dj == j)
             {
-                if (matrix[i][j] == 0)
-                {
-                    row_zero[i] = 1;
-                    col_zero[j] = 1;
-                }
+                continue;
+            }
+            if (matrix[i][dj] == INT_MAX)
+            {
+                return;
+            }
+
+            if (matrix[i][dj] != 0)
+            {
+                matrix[i][dj] = 0;
+            }
+            else
+            {
+                matrix[i][dj] = INT_MAX;
+                mz(i, dj, matrix);
+                matrix[i][dj] = 0;
             }
         }
 
-        // make all rows corresponding to a zero as zero
-        for (int i = 0; i < matrix.size(); i++)
+        // make zeroes over col
+        for (int di = 0; di < matrix.size(); di++)
         {
-            if (row_zero[i] == 1)
+            if (di == i)
             {
-                for (int j = 0; j < matrix[0].size(); j++)
-                {
-                    matrix[i][j] = 0;
-                }
+                continue;
             }
-        }
-
-        // make all cols corresponding to a zero as zero
-        for (int i = 0; i < matrix[0].size(); i++)
-        {
-            if (col_zero[i] == 1)
+            if (matrix[di][j] == INT_MAX)
             {
-                for (int j = 0; j < matrix.size(); j++)
-                {
-                    matrix[j][i] = 0;
-                }
+                return;
+            }
+
+            if (matrix[di][j] != 0)
+            {
+                matrix[di][j] = 0;
+            }
+            else
+            {
+                matrix[di][j] = INT_MAX;
+                mz(di, j, matrix);
+                matrix[di][j] = 0;
             }
         }
     }
@@ -56,7 +65,16 @@ class Solution
 public:
     void setZeroes(vector<vector<int>> &matrix)
     {
-        makeZero(matrix);
+        for (int i = 0; i < matrix.size(); i++)
+        {
+            for (int j = 0; j < matrix[0].size(); j++)
+            {
+                if (matrix[i][j] == 0)
+                {
+                    mz(i, j, matrix);
+                }
+            }
+        }
     }
 };
 
