@@ -8,11 +8,12 @@ typedef long long ll;
 typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
 
-// O(N) O(1)
 class Solution
 {
-public:
-    int findDuplicate(vector<int> &nums)
+
+private:
+    // O(N) O(1): with array modification
+    int _findDuplicate(vi &nums)
     {
         for (const int &n : nums)
         {
@@ -24,6 +25,30 @@ public:
             }
         }
         return -1;
+    }
+
+public:
+    int findDuplicate(vector<int> &nums)
+    {
+        // floyds cycle detection method
+        int fast = nums[0];
+        int slow = nums[0];
+
+        do
+        {
+            fast = nums[nums[fast]];
+            slow = nums[slow];
+        } while (fast != slow);
+
+        fast = nums[0];
+
+        while (fast != slow)
+        {
+            fast = nums[fast];
+            slow = nums[slow];
+        }
+
+        return slow;
     }
 };
 
