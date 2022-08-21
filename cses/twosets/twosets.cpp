@@ -9,71 +9,83 @@ typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
 
 // recursion successful, subarrays
-pair<bool, pair<vi, vi>> subsets(int idx, ll sumss1, vi ss1, vi ss2, int &n, int &target)
+
+bool subset(ll idx, ll sum, vector<ll> _ss, vector<ll> _ss2, vector<ll> &ss, vector<ll> &ss2, ll target, vector<ll> &arr, vector<vector<ll>> &dp)
 {
-    if (idx > n)
+    if (idx > arr.size())
     {
-        if (sumss1 == target)
+        if (sum == target)
         {
-            return make_pair(true, make_pair(ss1, ss2));
+            ss = _ss;
+            ss2 = _ss2;
+            return true;
         }
-        return make_pair(false, make_pair(ss1, ss2));
+        return false;
     }
 
-    if (sumss1 > target)
+    if (sum > target)
+        return false;
+
+    if (dp[idx][sum] != -1)
     {
-        return make_pair(false, make_pair(ss1, ss2));
+        return dp[idx][sum];
     }
+    // no take
+    _ss2.push_back(idx);
+    bool noTake = subset(idx + 1, sum, _ss, _ss2, ss, ss2, target, arr, dp);
+    _ss2.pop_back();
 
-    if (sumss1 == target)
+    bool take = false;
+    if (!noTake)
     {
-        return make_pair(true, make_pair(ss1, ss2));
+        // take
+        _ss.push_back(idx);
+        take = subset(idx + 1, sum + idx, _ss, _ss2, ss, ss2, target, arr, dp);
     }
 
-    // add to ss1
-    ss1.push_back(idx);
-    pair<bool, pair<vi, vi>> addToS1 = subsets(idx + 1, sumss1 + idx, ss1, ss2, n, target);
-    ss1.pop_back();
-
-    ss2.push_back(idx);
-    pair<bool, pair<vi, vi>> addToS2 = subsets(idx + 1, sumss1, ss1, ss2, n, target);
-    ss2.pop_back();
-
-    // add to ss2
-    return make_pair(false, make_pair(ss1, ss2));
+    return dp[idx][sum] = take || noTake;
 }
 
 int main()
 {
-    int n;
-    cin >> n;
-
-    ll totalSum = n * (n + 1) / 2;
-    if (totalSum % 2 != 0)
+    ll p;
+    cin >> p;
+    ll totSum = p * (p + 1) / 2;
+    if (totSum % 2 != 0)
     {
-        cout << "NO" << endl;
+        cout << "NO";
         return 0;
     }
+    cout << "YES" << endl;
+    ll target = totSum / 2;
 
-    int target = totalSum / 2;
-    vi ss1;
-    vi ss2;
-
-    pair<bool, pair<vi, vi>> ans = subsets(1, 0, ss1, ss2, n, target);
-
-    cout << ans.second.first.size() << endl;
-    for (auto it : ans.second.first)
+    vector<ll> arr;
+    for (ll i = 1; i <= p; i++)
     {
-        cout << it << " ";
+        arr.push_back(i);
+    }
+
+    // orginal s1 store
+    vector<ll> s1;
+    vector<ll> s2;
+
+    // dummy store for recursion
+    vector<ll> _s1;
+    vector<ll> _s2;
+    vector<vector<ll>> dp(p + 1, vector<ll>(target + 1, -1));
+    subset(1, 0, _s1, _s2, s1, s2, target, arr, dp);
+    cout << s1.size() << endl;
+    for (const ll &ch : s1)
+    {
+        cout << ch << " ";
     }
     cout << endl;
 
-    cout << ans.second.second.size() << endl;
-    for (auto it : ans.second.second)
+    cout << s2.size() << endl;
+    for (const ll &ch : s2)
     {
-        cout << it << " ";
+        cout << ch << " ";
     }
-    cout << endl;
 
     return 0;
 }
